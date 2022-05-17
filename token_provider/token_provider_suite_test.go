@@ -9,5 +9,5 @@ import (
 
 func TestTokenProvider(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "TokenProvider Suite")
+	RunSpecs(t, "TokenFetcher Suite")
 }

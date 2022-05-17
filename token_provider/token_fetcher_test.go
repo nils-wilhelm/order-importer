@@ -18,21 +18,20 @@ const (
 	CORRECT_TOKEN    = "correctToken"
 )
 
-var _ = Describe("Token Provider", func() {
-	var tokenProvider TokenProvider
+var _ = Describe("Token Fetcher", func() {
+	var tokenProvider TokenFetcher
 	var server *httptest.Server
 	var err error
-	var token *JWTToken
+	var jwt *JWT
 
 	BeforeEach(func() {
 		server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-
 			defer request.Body.Close()
 			body, _ := io.ReadAll(request.Body)
 			var authdata model.TokenAuthBody
 			_ = json.Unmarshal(body, &authdata)
 
-			if authdata.Username != CORRECT_USERNAME || authdata.Password != CORRECT_PASSWORD {
+			if authdata.Email != CORRECT_USERNAME || authdata.Password != CORRECT_PASSWORD {
 				writer.WriteHeader(http.StatusUnauthorized)
 				writer.Write([]byte("incorrect auth data"))
 				return
@@ -42,15 +41,15 @@ var _ = Describe("Token Provider", func() {
 				IdToken:      CORRECT_TOKEN,
 				Registered:   true,
 				RefreshToken: "",
-				ExpiresIn:    "",
+				ExpiresIn:    "3600",
 			})
 			writer.Write(respBody)
 		}))
-		tokenProvider = NewTokenProvider(
+		tokenProvider = NewTokenFetcher(
 			server.URL,
 			CORRECT_API_KEY,
 			model.TokenAuthBody{
-				Username:          CORRECT_USERNAME,
+				Email:             CORRECT_USERNAME,
 				Password:          CORRECT_PASSWORD,
 				ReturnSecureToken: true,
 			},
@@ -62,30 +61,30 @@ var _ = Describe("Token Provider", func() {
 
 		Context("correct auth data", func() {
 			BeforeEach(func() {
-				token, err = tokenProvider.GetToken()
+				jwt, err = tokenProvider.FetchToken()
 			})
-			It("returns the correct token", func() {
+			It("returns the correct Token", func() {
 				Expect(err).To(BeNil())
-				Expect(*token).To(Equal(JWTToken(CORRECT_TOKEN)))
+				Expect(jwt.Token).To(Equal((CORRECT_TOKEN)))
 			})
 		})
 		Context("incorrect auth data", func() {
 			BeforeEach(func() {
-				tokenProvider = NewTokenProvider(
+				tokenProvider = NewTokenFetcher(
 					server.URL,
 					"incorrectApiKey",
 					model.TokenAuthBody{
-						Username:          "incorrectUser",
+						Email:             "incorrectUser",
 						Password:          "incorrectPassword",
 						ReturnSecureToken: true,
 					},
 					http.Client{},
 				)
-				token, err = tokenProvider.GetToken()
+				jwt, err = tokenProvider.FetchToken()
 			})
-			It("returns no token", func() {
+			It("returns no Token", func() {
 				Expect(err).NotTo(BeNil())
-				Expect(token).To(BeNil())
+				Expect(jwt).To(BeNil())
 			})
 		})
 
@@ -96,12 +95,12 @@ var _ = Describe("Token Provider", func() {
 			server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 				// do not respond
 			}))
-			tokenProvider = NewTokenProvider(server.URL, CORRECT_API_KEY, model.TokenAuthBody{}, http.Client{})
-			token, err = tokenProvider.GetToken()
+			tokenProvider = NewTokenFetcher(server.URL, CORRECT_API_KEY, model.TokenAuthBody{}, http.Client{})
+			jwt, err = tokenProvider.FetchToken()
 		})
-		It("returns no token", func() {
+		It("returns no Token", func() {
 			Expect(err).NotTo(BeNil())
-			Expect(token).To(BeNil())
+			Expect(jwt).To(BeNil())
 		})
 	})
 })

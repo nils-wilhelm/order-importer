@@ -1,7 +1,7 @@
 package model
 
 type TokenAuthBody struct {
-	Username          string `json:"username"`
+	Email             string `json:"email"`
 	Password          string `json:"password"`
 	ReturnSecureToken bool   `json:"returnSecureToken"`
 }
