@@ -42,7 +42,7 @@ func (t *tokenProvider) GetToken() (*JWT, error) {
 	}
 	err = t.store.SaveToken(*fetchedToken)
 	if err != nil {
-		fmt.Println("error saving token: %s", err.Error())
+		fmt.Printf("error saving token: %s", err.Error())
 	}
 	return fetchedToken, nil
 }

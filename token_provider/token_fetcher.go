@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	. "order-importer/model"
+	. "order-importer/model/external"
 	"strconv"
 	"time"
 )
@@ -71,9 +72,9 @@ func (t *tokenFetcher) doRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not do request: %w", err)
 	}
-	//if resp.StatusCode != 200 {
-	//	return nil, fmt.Errorf("request faield: %v", resp.StatusCode)
-	//}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("request faield: %v", resp.StatusCode)
+	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

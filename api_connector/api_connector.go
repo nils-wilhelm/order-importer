@@ -1,17 +1,23 @@
 package api_connector
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	. "order-importer/token_provider"
 )
 
+type APIResponse struct {
+	Payload    []byte
+	StatusCode int
+}
+
 type ApiConnector interface {
-	Get(path string, params map[string]string) ([]byte, error)
-	Put(path string, body io.ReadCloser, params map[string]string) ([]byte, error)
-	Post(path string, body io.ReadCloser, params map[string]string) ([]byte, error)
-	Delete(path string, params map[string]string) ([]byte, error)
+	Get(path string, params map[string]string) (*APIResponse, error)
+	Put(path string, body []byte, params map[string]string) (*APIResponse, error)
+	Post(path string, body []byte, params map[string]string) (*APIResponse, error)
+	Delete(path string, params map[string]string) (*APIResponse, error)
 }
 
 func NewApiConnector(
@@ -32,7 +38,7 @@ type apiConnector struct {
 	tokenProvider TokenProvider
 }
 
-func (a *apiConnector) Get(path string, params map[string]string) ([]byte, error) {
+func (a *apiConnector) Get(path string, params map[string]string) (*APIResponse, error) {
 	req, err := a.buildRequest(http.MethodGet, path, nil, params)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
@@ -40,7 +46,7 @@ func (a *apiConnector) Get(path string, params map[string]string) ([]byte, error
 	return a.executeRequest(req)
 }
 
-func (a *apiConnector) executeRequest(req *http.Request) ([]byte, error) {
+func (a *apiConnector) executeRequest(req *http.Request) (*APIResponse, error) {
 	resp, err := a.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("executing request: %w", err)
@@ -49,26 +55,29 @@ func (a *apiConnector) executeRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %w", err)
 	}
-	return body, nil
+	return &APIResponse{
+		Payload:    body,
+		StatusCode: resp.StatusCode,
+	}, nil
 }
 
-func (a *apiConnector) Put(path string, body io.ReadCloser, params map[string]string) ([]byte, error) {
-	req, err := a.buildRequest(http.MethodPut, path, body, params)
+func (a *apiConnector) Put(path string, body []byte, params map[string]string) (*APIResponse, error) {
+	req, err := a.buildRequest(http.MethodPut, path, bytes.NewReader(body), params)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
 	return a.executeRequest(req)
 }
 
-func (a *apiConnector) Post(path string, body io.ReadCloser, params map[string]string) ([]byte, error) {
-	req, err := a.buildRequest(http.MethodPost, path, body, params)
+func (a *apiConnector) Post(path string, body []byte, params map[string]string) (*APIResponse, error) {
+	req, err := a.buildRequest(http.MethodPost, path, bytes.NewReader(body), params)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
 	}
 	return a.executeRequest(req)
 }
 
-func (a *apiConnector) Delete(path string, params map[string]string) ([]byte, error) {
+func (a *apiConnector) Delete(path string, params map[string]string) (*APIResponse, error) {
 	req, err := a.buildRequest(http.MethodDelete, path, nil, params)
 	if err != nil {
 		return nil, fmt.Errorf("building request: %w", err)
@@ -93,6 +102,6 @@ func (a *apiConnector) buildRequest(method string, resourcePath string, body io.
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt.Token))
-
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	return req, nil
 }

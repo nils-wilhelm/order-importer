@@ -1,15 +1,17 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
+	"order-importer/order_converter"
+	"os"
+
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+
 	"order-importer/api_connector"
 	"order-importer/handlers"
 	"order-importer/model"
-	"os"
-
 	. "order-importer/token_provider"
 )
 
@@ -45,6 +47,6 @@ func main() {
 	r.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("Hello World"))
 	})
-	r.Handle("/orders", handlers.NewOrderHandler(apiConnector))
+	r.Handle("/orders", handlers.NewOrderHandler(apiConnector, order_converter.NewOrderConverter()))
 	http.ListenAndServe("localhost:8080", r)
 }

@@ -1,4 +1,4 @@
-package model
+package external
 
 type TokenResponse struct {
 	Kind         string `json:"kind"`

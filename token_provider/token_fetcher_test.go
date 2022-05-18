@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"order-importer/model"
+	"order-importer/model/external"
 	. "order-importer/token_provider"
 )
 
@@ -37,7 +38,7 @@ var _ = Describe("Token Fetcher", func() {
 				return
 			}
 
-			respBody, _ := json.Marshal(model.TokenResponse{
+			respBody, _ := json.Marshal(external.TokenResponse{
 				IdToken:      CORRECT_TOKEN,
 				Registered:   true,
 				RefreshToken: "",

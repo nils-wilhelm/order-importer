@@ -1,4 +1,4 @@
-package model
+package external
 
 import "time"
 
@@ -7,12 +7,8 @@ type Facility struct {
 		AdditionalAddressInfo string `json:"additionalAddressInfo"`
 		City                  string `json:"city"`
 		Country               string `json:"country"`
-		CustomAttributes      struct {
-		} `json:"customAttributes"`
-		HouseNumber  string `json:"houseNumber"`
-		PhoneNumbers []struct {
-			CustomAttributes struct {
-			} `json:"customAttributes"`
+		HouseNumber           string `json:"houseNumber"`
+		PhoneNumbers          []struct {
 			Label string `json:"label"`
 			Type  string `json:"type"`
 			Value string `json:"value"`
@@ -40,14 +36,10 @@ type Facility struct {
 		Recurrence string    `json:"recurrence"`
 	} `json:"closingDays"`
 	Contact struct {
-		CustomAttributes struct {
-		} `json:"customAttributes"`
 		FirstName       string `json:"firstName"`
 		LastName        string `json:"lastName"`
 		RoleDescription string `json:"roleDescription"`
 	} `json:"contact"`
-	CustomAttributes struct {
-	} `json:"customAttributes"`
 	FulfillmentProcessBuffer string `json:"fulfillmentProcessBuffer"`
 	LocationType             string `json:"locationType"`
 	Name                     string `json:"name"`
