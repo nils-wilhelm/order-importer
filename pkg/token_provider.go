@@ -1,4 +1,4 @@
-package token_provider
+package pkg
 
 import (
 	"fmt"
@@ -29,8 +29,6 @@ func (t *tokenProvider) GetToken() (*JWT, error) {
 	if err != nil {
 		return nil, fmt.Errorf("loading token from store: %w", err)
 	}
-	fmt.Println("token from store: ", tokenFromStore.ExpireTime)
-	fmt.Println("now: ", time.Now())
 	if tokenFromStore.ExpireTime.After(time.Now()) {
 		fmt.Println("token still valid. use from store")
 		return tokenFromStore, nil

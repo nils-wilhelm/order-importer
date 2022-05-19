@@ -1,10 +1,12 @@
 package mocks
 
-import "order-importer/token_provider"
+import (
+	"order-importer/pkg"
+)
 
 type TokenFetcherMock interface {
-	token_provider.TokenFetcher
-	FetchTokenReturns(jwt *token_provider.JWT, err error)
+	pkg.TokenFetcher
+	FetchTokenReturns(jwt *pkg.JWT, err error)
 	FetchTokenCallCount() int
 }
 
@@ -14,7 +16,7 @@ func NewTokenFetcherMock() TokenFetcherMock {
 
 type tokenFetcherMock struct {
 	fetchTokenCallCount int
-	jwt                 *token_provider.JWT
+	jwt                 *pkg.JWT
 	err                 error
 }
 
@@ -22,12 +24,12 @@ func (t *tokenFetcherMock) FetchTokenCallCount() int {
 	return t.fetchTokenCallCount
 }
 
-func (t *tokenFetcherMock) FetchToken() (*token_provider.JWT, error) {
+func (t *tokenFetcherMock) FetchToken() (*pkg.JWT, error) {
 	t.fetchTokenCallCount++
 	return t.jwt, t.err
 }
 
-func (t *tokenFetcherMock) FetchTokenReturns(jwt *token_provider.JWT, err error) {
+func (t *tokenFetcherMock) FetchTokenReturns(jwt *pkg.JWT, err error) {
 	t.jwt = jwt
 	t.err = err
 }

@@ -1,18 +1,16 @@
-package handlers
+package pkg
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
 
-	. "order-importer/api_connector"
 	"order-importer/model/intern"
-	"order-importer/order_converter"
 )
 
 func NewOrderHandler(
 	connector ApiConnector,
-	orderConverter order_converter.OrderConverter,
+	orderConverter OrderConverter,
 ) http.Handler {
 	return &orderHandler{
 		connector:      connector,
@@ -22,7 +20,7 @@ func NewOrderHandler(
 
 type orderHandler struct {
 	connector      ApiConnector
-	orderConverter order_converter.OrderConverter
+	orderConverter OrderConverter
 }
 
 func (o *orderHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

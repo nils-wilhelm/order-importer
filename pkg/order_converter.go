@@ -1,4 +1,4 @@
-package order_converter
+package pkg
 
 import (
 	"time"

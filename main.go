@@ -3,16 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
-	"order-importer/order_converter"
 	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
-	"order-importer/api_connector"
-	"order-importer/handlers"
 	"order-importer/model"
-	. "order-importer/token_provider"
+	"order-importer/pkg"
 )
 
 func main() {
@@ -27,9 +24,9 @@ func main() {
 	apiUrl := os.Getenv("FULFILLMENT_API_URL")
 	credentialUrl := os.Getenv("FULFILLMENT_CREDENTIAL_URL")
 
-	tokenProvider := NewTokenProvider(
-		NewInMemoryTokenStore(),
-		NewTokenFetcher(
+	tokenProvider := pkg.NewTokenProvider(
+		pkg.NewInMemoryTokenStore(),
+		pkg.NewTokenFetcher(
 			credentialUrl,
 			apiKey,
 			model.TokenAuthBody{
@@ -41,12 +38,12 @@ func main() {
 		),
 	)
 
-	apiConnector := api_connector.NewApiConnector(http.Client{}, tokenProvider, apiUrl)
+	apiConnector := pkg.NewApiConnector(http.Client{}, tokenProvider, apiUrl)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("Hello World"))
 	})
-	r.Handle("/orders", handlers.NewOrderHandler(apiConnector, order_converter.NewOrderConverter()))
+	r.Handle("/orders", pkg.NewOrderHandler(apiConnector, pkg.NewOrderConverter()))
 	http.ListenAndServe("localhost:8080", r)
 }

@@ -1,4 +1,4 @@
-package token_provider
+package pkg
 
 import (
 	"time"

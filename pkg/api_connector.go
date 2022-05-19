@@ -1,11 +1,10 @@
-package api_connector
+package pkg
 
 import (
 	"bytes"
 	"fmt"
 	"io"
 	"net/http"
-	. "order-importer/token_provider"
 )
 
 type APIResponse struct {
@@ -44,21 +43,6 @@ func (a *apiConnector) Get(path string, params map[string]string) (*APIResponse,
 		return nil, fmt.Errorf("building request: %w", err)
 	}
 	return a.executeRequest(req)
-}
-
-func (a *apiConnector) executeRequest(req *http.Request) (*APIResponse, error) {
-	resp, err := a.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("executing request: %w", err)
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response body: %w", err)
-	}
-	return &APIResponse{
-		Payload:    body,
-		StatusCode: resp.StatusCode,
-	}, nil
 }
 
 func (a *apiConnector) Put(path string, body []byte, params map[string]string) (*APIResponse, error) {
@@ -104,4 +88,19 @@ func (a *apiConnector) buildRequest(method string, resourcePath string, body io.
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", jwt.Token))
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	return req, nil
+}
+
+func (a *apiConnector) executeRequest(req *http.Request) (*APIResponse, error) {
+	resp, err := a.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing request: %w", err)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response body: %w", err)
+	}
+	return &APIResponse{
+		Payload:    body,
+		StatusCode: resp.StatusCode,
+	}, nil
 }

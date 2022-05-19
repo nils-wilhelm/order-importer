@@ -12,21 +12,6 @@ const (
 	LOCKED    OrderStatus = "LOCKED"
 )
 
-type OrderId string
-
-type TOrder struct {
-	Consumer       Consumer                   `json:"consumer"`
-	OrderDate      time.Time                  `json:"orderDate"`
-	OrderLineItems []OrderLineItemForCreation `json:"orderLineItems"`
-	Status         OrderStatus                `json:"status"`
-	Id             OrderId                    `json:"id"`
-}
-
-type OrderForCreation struct {
-	Consumer  Consumer  `json:"consumer"`
-	OrderDate time.Time `json:"orderDate"`
-}
-
 type Collect struct {
 	FacilityRef         string   `json:"facilityRef"`
 	Paid                bool     `json:"paid"`
@@ -43,10 +28,10 @@ type Shipping struct {
 }
 
 type DeliveryPreferences struct {
-	Collect             []Collect `json:"collect,omitempty"`
-	Shipping            Shipping  `json:"shipping,omitempty"`
-	SupplyingFacilities []string  `json:"supplyingFacilities,omitempty"`
-	TargetTime          time.Time `json:"targetTime,omitempty"`
+	Collect             []Collect  `json:"collect,omitempty"`
+	Shipping            *Shipping  `json:"shipping,omitempty"`
+	SupplyingFacilities []string   `json:"supplyingFacilities,omitempty"`
+	TargetTime          *time.Time `json:"targetTime,omitempty"`
 }
 
 type Order struct {

@@ -1,4 +1,4 @@
-package token_provider
+package pkg
 
 import (
 	"bytes"
@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	. "order-importer/model"
-	. "order-importer/model/external"
 	"strconv"
 	"time"
+
+	. "order-importer/model"
+	. "order-importer/model/external"
 )
 
 type TokenFetcher interface {
@@ -66,23 +67,6 @@ func (t *tokenFetcher) parseTokenResponse(body []byte) (*JWT, error) {
 	return &jwt, nil
 }
 
-func (t *tokenFetcher) doRequest(req *http.Request) ([]byte, error) {
-	// TODO retry
-	resp, err := t.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("could not do request: %w", err)
-	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request faield: %v", resp.StatusCode)
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading body data: %w", err)
-	}
-	return body, nil
-}
-
 func (t *tokenFetcher) buildRequest() (*http.Request, error) {
 	postBody, err := json.Marshal(t.bodyData)
 	if err != nil {
@@ -98,4 +82,21 @@ func (t *tokenFetcher) buildRequest() (*http.Request, error) {
 	values.Add("key", t.apiKey)
 	req.URL.RawQuery = values.Encode()
 	return req, nil
+}
+
+func (t *tokenFetcher) doRequest(req *http.Request) ([]byte, error) {
+	// TODO retry
+	resp, err := t.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("could not do request: %w", err)
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("request faield: %v", resp.StatusCode)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading body data: %w", err)
+	}
+	return body, nil
 }

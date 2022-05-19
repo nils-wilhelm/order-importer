@@ -16,20 +16,22 @@ type Customer struct {
 	Email     string            `json:"email"`
 }
 
+type PhoneNumber struct {
+	Label string `json:"label"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
 type CustomerAddress struct {
-	City         string `json:"city"`
-	Country      string `json:"country"`
-	HouseNumber  string `json:"houseNumber"`
-	PhoneNumbers []struct {
-		Label string `json:"label"`
-		Type  string `json:"type"`
-		Value string `json:"value"`
-	} `json:"phoneNumbers"`
-	PostalCode string `json:"postalCode"`
-	Street     string `json:"street"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	Salutation string `json:"salutation"`
+	City         string        `json:"city"`
+	Country      string        `json:"country"`
+	HouseNumber  string        `json:"houseNumber"`
+	PhoneNumbers []PhoneNumber `json:"phoneNumbers"`
+	PostalCode   string        `json:"postalCode"`
+	Street       string        `json:"street"`
+	FirstName    string        `json:"firstName"`
+	LastName     string        `json:"lastName"`
+	Salutation   string        `json:"salutation"`
 }
 
 type Shipping struct {
@@ -51,4 +53,4 @@ type Item struct {
 }
 
 const SHIPPING_METHOD_DELIVERY = "DELIVERY"
-const SHIPPING_METHOD_PICKUP = "SHIPPING_METHOD_PICKUP"
+const SHIPPING_METHOD_PICKUP = "PICKUP"
