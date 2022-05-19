@@ -22,7 +22,7 @@ type orderConverter struct {
 
 func (o *orderConverter) Convert(order intern.Order) external.Order {
 
-	return external.Order{
+	externalOrder := external.Order{
 		Consumer: external.Consumer{
 			Addresses: o.addresses(order),
 			Email:     order.Customer.Email,
@@ -33,34 +33,36 @@ func (o *orderConverter) Convert(order intern.Order) external.Order {
 		Status:              "OPEN",
 		TenantOrderId:       uuid.New().String(),
 	}
-
+	return externalOrder
 }
 
 func (o *orderConverter) deliveryPrefs(order intern.Order) external.DeliveryPreferences {
 	deliveryPreferences := external.DeliveryPreferences{}
 
 	if order.Shipping.ShippingMethod == intern.SHIPPING_METHOD_DELIVERY {
-		deliveryPreferences.Shipping = external.Shipping{
+		deliveryPreferences.Shipping = &external.Shipping{
 			ServiceLevel: "DELIVERY",
 			Servicetype:  "BEST_EFFORT",
 		}
+		deliveryPreferences.TargetTime = o.targetTime()
 	} else {
 		deliveryPreferences.Collect = []external.Collect{
 			{
-				FacilityRef: order.Shipping.PickUpStore,
-				Paid:        true,
+				FacilityRef:         order.Shipping.PickUpStore,
+				Paid:                true,
+				SupplyingFacilities: []string{},
 			},
 		}
 	}
-	deliveryPreferences.TargetTime = o.targetTime()
 
 	return deliveryPreferences
 }
 
-func (o *orderConverter) targetTime() time.Time {
+func (o *orderConverter) targetTime() *time.Time {
 	now := time.Now()
 	year, month, day := now.Add(time.Hour * 24 * 2).Date()
-	return time.Date(year, month, day, 12, 0, 0, 0, now.Location())
+	targetTime := time.Date(year, month, day, 12, 0, 0, 0, now.Location())
+	return &targetTime
 }
 
 func (o *orderConverter) items(order intern.Order) []external.OrderLineItem {

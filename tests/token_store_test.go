@@ -1,9 +1,9 @@
-package token_provider_test
+package tests
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "order-importer/token_provider"
+	. "order-importer/pkg"
 	"time"
 )
 

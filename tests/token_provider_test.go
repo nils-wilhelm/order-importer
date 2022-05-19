@@ -1,14 +1,14 @@
-package token_provider_test
+package tests
 
 import (
 	"errors"
+	. "order-importer/pkg"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"order-importer/mocks"
-	. "order-importer/token_provider"
 )
 
 var _ = Describe("token provider", func() {

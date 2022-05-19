@@ -1,4 +1,4 @@
-package token_provider_test
+package tests
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"order-importer/model"
 	"order-importer/model/external"
-	. "order-importer/token_provider"
+	. "order-importer/pkg"
 )
 
 const (

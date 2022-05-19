@@ -1,4 +1,4 @@
-package token_provider_test
+package tests
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestTokenProvider(t *testing.T) {
+func TestTests(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "TokenFetcher Suite")
+	RunSpecs(t, "Tests Suite")
 }

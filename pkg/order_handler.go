@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+
 	. "order-importer/api_connector"
 	"order-importer/model/intern"
 	"order-importer/order_converter"
@@ -33,17 +34,6 @@ func (o *orderHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reque
 		o.postOrder(writer, request)
 		break
 	}
-	//body, err := io.ReadAll(request.Body)
-	//if err != nil {
-	//	writer.WriteHeader(http.StatusInternalServerError)
-	//	return
-	//}
-	//var order model.Order
-	//err = json.Unmarshal(body, &order)
-	//if err != nil {
-	//	writer.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
 }
 
 func (o *orderHandler) getOrders(writer http.ResponseWriter, request *http.Request) {
@@ -52,7 +42,6 @@ func (o *orderHandler) getOrders(writer http.ResponseWriter, request *http.Reque
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 	}
 	writer.Write(body.Payload)
-
 }
 
 func (o *orderHandler) postOrder(writer http.ResponseWriter, request *http.Request) {
@@ -74,14 +63,15 @@ func (o *orderHandler) postOrder(writer http.ResponseWriter, request *http.Reque
 	payload, err := json.Marshal(externalOrder)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		return
 	}
-
 	//writer.Write(payload)
 	response, err := o.connector.Post("/orders", payload, nil)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	if response.StatusCode == http.StatusCreated {
+		writer.WriteHeader(http.StatusCreated)
 	}
 	writer.WriteHeader(response.StatusCode)
 	writer.Write(response.Payload)
