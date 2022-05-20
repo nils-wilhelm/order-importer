@@ -3,12 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
+	"order-importer/model/auth"
 	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 
-	"order-importer/model"
 	"order-importer/pkg"
 )
 
@@ -29,7 +29,7 @@ func main() {
 		pkg.NewTokenFetcher(
 			credentialUrl,
 			apiKey,
-			model.TokenAuthBody{
+			auth.TokenRequestPayload{
 				Email:             email,
 				Password:          password,
 				ReturnSecureToken: true,

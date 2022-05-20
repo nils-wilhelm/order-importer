@@ -7,8 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"order-importer/model"
-	"order-importer/model/external"
+	"order-importer/model/auth"
 	. "order-importer/pkg"
 )
 
@@ -29,7 +28,7 @@ var _ = Describe("Token Fetcher", func() {
 		server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			defer request.Body.Close()
 			body, _ := io.ReadAll(request.Body)
-			var authdata model.TokenAuthBody
+			var authdata auth.TokenRequestPayload
 			_ = json.Unmarshal(body, &authdata)
 
 			if authdata.Email != CORRECT_USERNAME || authdata.Password != CORRECT_PASSWORD {
@@ -38,7 +37,7 @@ var _ = Describe("Token Fetcher", func() {
 				return
 			}
 
-			respBody, _ := json.Marshal(external.TokenResponse{
+			respBody, _ := json.Marshal(auth.TokenResponsePayload{
 				IdToken:      CORRECT_TOKEN,
 				Registered:   true,
 				RefreshToken: "",
@@ -49,7 +48,7 @@ var _ = Describe("Token Fetcher", func() {
 		tokenProvider = NewTokenFetcher(
 			server.URL,
 			CORRECT_API_KEY,
-			model.TokenAuthBody{
+			auth.TokenRequestPayload{
 				Email:             CORRECT_USERNAME,
 				Password:          CORRECT_PASSWORD,
 				ReturnSecureToken: true,
@@ -74,7 +73,7 @@ var _ = Describe("Token Fetcher", func() {
 				tokenProvider = NewTokenFetcher(
 					server.URL,
 					"incorrectApiKey",
-					model.TokenAuthBody{
+					auth.TokenRequestPayload{
 						Email:             "incorrectUser",
 						Password:          "incorrectPassword",
 						ReturnSecureToken: true,
@@ -96,7 +95,7 @@ var _ = Describe("Token Fetcher", func() {
 			server = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 				// do not respond
 			}))
-			tokenProvider = NewTokenFetcher(server.URL, CORRECT_API_KEY, model.TokenAuthBody{}, http.Client{})
+			tokenProvider = NewTokenFetcher(server.URL, CORRECT_API_KEY, auth.TokenRequestPayload{}, http.Client{})
 			jwt, err = tokenProvider.FetchToken()
 		})
 		It("returns no Token", func() {

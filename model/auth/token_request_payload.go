@@ -1,6 +1,6 @@
-package model
+package auth
 
-type TokenAuthBody struct {
+type TokenRequestPayload struct {
 	Email             string `json:"email"`
 	Password          string `json:"password"`
 	ReturnSecureToken bool   `json:"returnSecureToken"`

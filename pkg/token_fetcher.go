@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	. "order-importer/model/auth"
 	"strconv"
 	"time"
-
-	. "order-importer/model"
-	. "order-importer/model/external"
 )
 
 type TokenFetcher interface {
@@ -20,7 +18,7 @@ type TokenFetcher interface {
 func NewTokenFetcher(
 	credentialUrl string,
 	apiKey string,
-	bodyData TokenAuthBody,
+	bodyData TokenRequestPayload,
 	client http.Client,
 ) TokenFetcher {
 	return &tokenFetcher{
@@ -34,7 +32,7 @@ func NewTokenFetcher(
 type tokenFetcher struct {
 	credentialUrl string
 	apiKey        string
-	bodyData      TokenAuthBody
+	bodyData      TokenRequestPayload
 	client        http.Client
 }
 
@@ -51,7 +49,7 @@ func (t *tokenFetcher) FetchToken() (*JWT, error) {
 }
 
 func (t *tokenFetcher) parseTokenResponse(body []byte) (*JWT, error) {
-	var tokenResponse TokenResponse
+	var tokenResponse TokenResponsePayload
 	err := json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		return nil, fmt.Errorf("could not unmarshal Token response: %w", err)

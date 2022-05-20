@@ -1,6 +1,6 @@
-package external
+package auth
 
-type TokenResponse struct {
+type TokenResponsePayload struct {
 	Kind         string `json:"kind"`
 	LocalId      string `json:"localId"`
 	Email        string `json:"email"`
